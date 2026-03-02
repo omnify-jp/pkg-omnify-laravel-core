@@ -3,7 +3,7 @@ import { App, Button, DatePicker, Drawer, Dropdown, Flex, Form, Input, Select, S
 import type { TableColumnsType, TableProps } from 'antd';
 import { isAxiosError } from 'axios';
 import dayjs from 'dayjs';
-import { Ellipsis, PlusCircle } from 'lucide-react';
+import { Ellipsis, Eye, PlusCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
@@ -333,6 +333,12 @@ export default function AdminOrganizationsIndex({ organizations, filters }: Prop
                     menu={{
                         items: [
                             {
+                                key: 'view',
+                                icon: <Eye size={16} />,
+                                label: t('common.view', 'View'),
+                                onClick: () => router.visit(`/admin/organizations/${record.slug}`),
+                            },
+                            {
                                 key: 'edit',
                                 label: t('common.edit', 'Edit'),
                                 onClick: () => handleEdit(record),
@@ -409,6 +415,10 @@ export default function AdminOrganizationsIndex({ organizations, filters }: Prop
                 columns={columns}
                 rowKey="id"
                 onChange={handleTableChange}
+                onRow={(record) => ({
+                    onClick: () => router.visit(`/admin/organizations/${record.slug}`),
+                    style: { cursor: 'pointer' },
+                })}
                 pagination={{
                     current: organizations.meta.current_page,
                     total: organizations.meta.total,
