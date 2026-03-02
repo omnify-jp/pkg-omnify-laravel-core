@@ -5,6 +5,7 @@ use Omnify\Core\Http\Controllers\Standalone\Admin\BranchAdminController;
 use Omnify\Core\Http\Controllers\Standalone\Admin\BrandAdminController;
 use Omnify\Core\Http\Controllers\Standalone\Admin\LocationAdminController;
 use Omnify\Core\Http\Controllers\Standalone\Admin\OrganizationAdminController;
+use Omnify\Core\Http\Controllers\Standalone\Admin\OrganizationUserAdminController;
 use Omnify\Core\Http\Controllers\Standalone\Admin\UserAdminController;
 
 /*
@@ -36,6 +37,16 @@ Route::prefix($prefix)
         // Organization management
         Route::resource('organizations', OrganizationAdminController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy']);
+
+        // Organization user management (nested)
+        Route::post('/organizations/{organization}/users/search', [OrganizationUserAdminController::class, 'search'])
+            ->name('organizations.users.search');
+        Route::post('/organizations/{organization}/users', [OrganizationUserAdminController::class, 'store'])
+            ->name('organizations.users.store');
+        Route::put('/organizations/{organization}/users/{user}', [OrganizationUserAdminController::class, 'update'])
+            ->name('organizations.users.update');
+        Route::delete('/organizations/{organization}/users/{user}', [OrganizationUserAdminController::class, 'destroy'])
+            ->name('organizations.users.destroy');
 
         // Branch management
         Route::resource('branches', BranchAdminController::class)
