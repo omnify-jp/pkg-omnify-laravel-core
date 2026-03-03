@@ -12,6 +12,13 @@ class AdminAdminUpdateRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('password') === '') {
+            $this->merge(['password' => null]);
+        }
+    }
+
     /**
      * @return array<string, array<int, mixed>>
      */
@@ -21,6 +28,7 @@ class AdminAdminUpdateRequest extends FormRequest
             'name' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'email', 'max:255', Rule::unique('admins', 'email')->ignore($this->route('admin'))],
             'password' => ['nullable', 'string', 'min:8'],
+            'is_active' => ['sometimes', 'boolean'],
         ];
     }
 }

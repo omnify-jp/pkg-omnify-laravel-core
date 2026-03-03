@@ -20,6 +20,7 @@ class AdminAdminStoreRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:admins,email'],
             'password' => ['required', 'string', 'min:8'],
+            'is_active' => ['sometimes', 'boolean'],
         ];
     }
 }

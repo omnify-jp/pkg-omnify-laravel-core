@@ -1,5 +1,5 @@
 import { router, usePage } from '@inertiajs/react';
-import { App, Button, Drawer, Dropdown, Flex, Form, Input, Table, Tag } from 'antd';
+import { App, Button, Drawer, Dropdown, Flex, Form, Input, Switch, Table, Tag } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { isAxiosError } from 'axios';
 import dayjs from 'dayjs';
@@ -29,6 +29,7 @@ type AdminFormData = {
     name: string;
     email: string;
     password: string;
+    is_active: boolean;
 };
 
 type Props = {
@@ -67,6 +68,7 @@ function AdminFormDrawer({ open, onClose, admin }: AdminFormDrawerProps) {
             name: admin?.name ?? '',
             email: admin?.email ?? '',
             password: '',
+            is_active: admin?.is_active ?? true,
         });
     }, [open, admin, form]);
 
@@ -107,11 +109,11 @@ function AdminFormDrawer({ open, onClose, admin }: AdminFormDrawerProps) {
                     : t('admin.admins.create', 'Create Administrator')
             }
             placement="right"
-            size={480}
+            width={480}
             open={open}
             onClose={onClose}
             footer={
-                <Flex justify="end" gap={8}>
+                <Flex justify="end" gap="small">
                     <Button onClick={onClose}>
                         {t('common.cancel', 'Cancel')}
                     </Button>
@@ -175,6 +177,14 @@ function AdminFormDrawer({ open, onClose, admin }: AdminFormDrawerProps) {
                         }
                         autoComplete="new-password"
                     />
+                </Form.Item>
+
+                <Form.Item
+                    name="is_active"
+                    label={t('admin.admins.isActive', 'Active')}
+                    valuePropName="checked"
+                >
+                    <Switch />
                 </Form.Item>
             </Form>
         </Drawer>
