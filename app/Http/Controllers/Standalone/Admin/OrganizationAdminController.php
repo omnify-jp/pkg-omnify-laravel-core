@@ -13,6 +13,7 @@ use Omnify\Core\Http\Requests\Admin\OrganizationUpdateRequest;
 use Omnify\Core\Models\Branch;
 use Omnify\Core\Models\Location;
 use Omnify\Core\Models\Organization;
+use Omnify\Core\Models\Role;
 use Omnify\Core\Models\User;
 
 class OrganizationAdminController
@@ -180,14 +181,30 @@ class OrganizationAdminController
                 'meta' => $paginationMeta($locations),
             ],
             'users' => [
-                'data' => collect($users->items())->map(fn ($user) => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role_name' => $user->roles->first()?->name,
-                ]),
+                'data' => collect($users->items())->map(function ($user) use ($organization) {
+                    static $orgBranches = null;
+                    $orgBranches ??= Branch::where('console_organization_id', $organization->console_organization_id)
+                        ->pluck('name', 'console_branch_id');
+
+                    $role = $user->roles->first();
+                    $consoleBranchId = $role?->pivot->console_branch_id;
+
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'is_active' => $user->is_active,
+                        'role_id' => $role?->id,
+                        'role_name' => $role?->name,
+                        'role_slug' => $role?->slug,
+                        'console_branch_id' => $consoleBranchId,
+                        'branch_name' => $consoleBranchId ? ($orgBranches[$consoleBranchId] ?? null) : null,
+                        'scope_type' => $consoleBranchId ? 'branch' : 'org-wide',
+                    ];
+                }),
                 'meta' => $paginationMeta($users),
             ],
+            'roles' => Role::orderBy('level')->get(['id', 'name', 'slug', 'level']),
             'tab' => $tab,
             'filters' => [
                 'branches_q' => $request->input('branches_q'),
